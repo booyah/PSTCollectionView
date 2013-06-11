@@ -17,4 +17,14 @@
 
 @end
 
+#ifdef APPORTABLE
+
+@interface NSIndexSet (Enumeration)
+
+- (void)enumerateIndexesUsingBlock:(void (^)(NSUInteger idx, BOOL *stop))block;
+
+@end
+
+#endif
+
 #endif
