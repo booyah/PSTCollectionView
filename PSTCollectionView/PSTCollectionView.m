@@ -238,15 +238,19 @@ static void PSTCollectionViewCommonSetup(PSTCollectionView *_self) {
 
     // update cells
     if (_collectionViewFlags.fadeCellsForBoundsChange) {
+#if !defined(APPORTABLE)
         [CATransaction begin];
         [CATransaction setDisableActions:YES];
+#endif
     }
 
     if (!_collectionViewFlags.updatingLayout)
         [self updateVisibleCellsNow:YES];
 
     if (_collectionViewFlags.fadeCellsForBoundsChange) {
+#if !defined(APPORTABLE)
         [CATransaction commit];
+#endif
     }
 
     // do we need to update contentSize?
@@ -1463,8 +1467,10 @@ static void PSTCollectionViewCommonSetup(PSTCollectionView *_self) {
     [cell setHighlighted:[_indexPathsForHighlightedItems containsObject:indexPath]];
     [cell setSelected:[_indexPathsForSelectedItems containsObject:indexPath]];
 
+#if !defined(APPORTABLE)
     // voiceover support
     cell.isAccessibilityElement = YES;
+#endif
 
     return cell;
 }
@@ -1785,6 +1791,7 @@ static void PSTCollectionViewCommonSetup(PSTCollectionView *_self) {
     [UIView animateWithDuration:.3 animations:^{
         _collectionViewFlags.updatingLayout = YES;
 
+#if !defined(APPORTABLE)
         [CATransaction begin];
         [CATransaction setAnimationDuration:.3];
 
@@ -1804,6 +1811,7 @@ static void PSTCollectionViewCommonSetup(PSTCollectionView *_self) {
         // Ideally, _updateCompletionHandler should be called along with the other logic in
         // CATransaction's completionHandler but I simply don't know where to get that flag.
         [CATransaction setCompletionBlock:^{
+#endif
             // Iterate through all the views that we are going to remove.
             [viewsToRemove enumerateKeysAndObjectsUsingBlock:^(NSNumber *keyObj, NSArray *views, BOOL *stop) {
                 PSTCollectionViewItemType type = [keyObj unsignedIntegerValue];
@@ -1818,14 +1826,18 @@ static void PSTCollectionViewCommonSetup(PSTCollectionView *_self) {
                 }
             }];
             _collectionViewFlags.updatingLayout = NO;
+#if !defined(APPORTABLE)
         }];
+#endif
 
         for (NSDictionary *animation in animations) {
             PSTCollectionReusableView *view = animation[@"view"];
             PSTCollectionViewLayoutAttributes *attrs = animation[@"newLayoutInfos"];
             [view applyLayoutAttributes:attrs];
         }
+#if !defined(APPORTABLE)
         [CATransaction commit];
+#endif
     } completion:^(BOOL finished) {
 
         if (_updateCompletionHandler) {
